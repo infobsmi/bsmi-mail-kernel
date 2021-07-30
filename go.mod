@@ -6,6 +6,7 @@ require (
 	github.com/aws/aws-sdk-go v1.40.11
 	github.com/cnmade/pongo2gin v1.0.2
 	github.com/disintegration/imaging v1.6.2
+	github.com/emersion/go-imap v1.1.0
 	github.com/flosch/pongo2/v4 v4.0.2
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.7.2

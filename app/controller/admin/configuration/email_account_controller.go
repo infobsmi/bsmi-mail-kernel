@@ -1,15 +1,19 @@
 package configuration
 
 import (
+	"errors"
 	"fmt"
 	"github.com/cnmade/bsmi-mail-kernel/app/orm/model"
 	"github.com/cnmade/bsmi-mail-kernel/app/utils/admin_utils"
 	"github.com/cnmade/bsmi-mail-kernel/app/vo"
 	"github.com/cnmade/bsmi-mail-kernel/pkg/common"
 	vo2 "github.com/cnmade/bsmi-mail-kernel/pkg/common/vo"
+	"github.com/emersion/go-imap"
+	"github.com/emersion/go-imap/client"
 	"github.com/flosch/pongo2/v4"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"strconv"
@@ -90,6 +94,99 @@ func (co *email_account_controller) AddAction(c *gin.Context) {
 		}))
 	return
 }
+
+
+
+func (co *email_account_controller) TestAction(c *gin.Context) {
+	err, _, _ := admin_utils.AdminPermissionCheck(c)
+	if err != nil {
+
+		common.LogError(err)
+		c.Redirect(301, "/admin/login")
+		return
+	}
+
+
+	id := c.Param("id")
+	var emailConfig model.EmailAccount
+	result := common.NewDb.First(&emailConfig, id)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		c.JSON(200, gin.H{"msg": "配置不存在"})
+		return
+	}
+
+	imapAddr := fmt.Sprintf("%s:%s", emailConfig.ImapHost, emailConfig.ImapPort)
+	cmail, err := client.DialTLS(imapAddr, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Connected")
+
+	// Don't forget to logout
+	defer cmail.Logout()
+
+	// Login
+	if err := cmail.Login(emailConfig.ImapAccount, emailConfig.ImapPassword); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Logged in")
+
+	// List mailboxes
+	mailboxes := make(chan *imap.MailboxInfo, 10)
+	done := make(chan error, 1)
+	go func () {
+		done <- cmail.List("", "*", mailboxes)
+	}()
+
+	log.Println("Mailboxes:")
+	for m := range mailboxes {
+		log.Println("* " + m.Name)
+	}
+
+	if err := <-done; err != nil {
+		log.Fatal(err)
+	}
+
+	// Select INBOX
+	mbox, err := cmail.Select("INBOX", false)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Flags for INBOX:", mbox.Flags)
+
+	// Get the last 4 messages
+	from := uint32(1)
+	to := mbox.Messages
+	if mbox.Messages > 3 {
+		// We're using unsigned integers here, only subtract if the result is > 0
+		from = mbox.Messages - 3
+	}
+	seqset := new(imap.SeqSet)
+	seqset.AddRange(from, to)
+
+	messages := make(chan *imap.Message, 10)
+	done = make(chan error, 1)
+	go func() {
+		done <- cmail.Fetch(seqset, []imap.FetchItem{imap.FetchEnvelope}, messages)
+	}()
+
+	log.Println("Last 4 messages:")
+	for msg := range messages {
+		log.Println("* " + msg.Envelope.Subject)
+	}
+
+	if err := <-done; err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Done!")
+	c.JSON(200, gin.H{"config": emailConfig})
+
+	return
+}
+
+
 
 func (co *email_account_controller) SaveAddAction(c *gin.Context) {
 	err, _, _ := admin_utils.AdminPermissionCheck(c)
