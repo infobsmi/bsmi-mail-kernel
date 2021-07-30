@@ -1,0 +1,42 @@
+{% extends "../../base.html" %}
+{% block title %}知识库-BSMI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="float:right"><a href="/admin/files" target="_blank">文件上传</a></div>
+
+    <form action="/admin/configuration/email_account/saveAdd" method="post" class="row g-3" role="form">
+
+        <div class="mb-3 row">
+        <div class="col-auto"><label>邮件地址:</label><input name="title" class="form-control"></div>
+        <div class="col-auto"><label>账号短名称:</label><input name="title" class="form-control"></div>
+        </div>
+        <div class="mb-3 row">
+        <div class="col-auto">
+            <label>SMTP服务器地址:</label><input name="title" class="form-control">
+        </div>
+            <div class="col-auto">
+            <label>SMTP端口号:</label><input name="title" class="form-control">
+        </div>
+        </div>
+        <div class="mb-3 row">
+        <div class="col-auto"><label>SMTP登录账号:</label><input name="title" class="form-control"></div>
+        <div class="col-auto"><label>SMTP登录密码:</label><input name="title" class="form-control"></div>
+        </div>
+
+        <div class="mb-3 row">
+            <div class="col-auto"><label>IMAP服务器地址:</label><input name="title" class="form-control"></div>
+            <div class="col-auto"><label>IMAP端口号</label><input name="title" class="form-control"></div>
+        </div>
+        <div class="mb-3 row">
+        <div class="col-auto"><label>IMAP登录账号:</label><input name="title" class="form-control"></div>
+        <div class="col-auto"><label>IMAP登录密码:</label><input name="title" class="form-control"></div>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit">保存</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -68,3 +68,24 @@ func (co *email_account_controller) ListAction(c *gin.Context) {
 		}))
 	return
 }
+
+func (co *email_account_controller) AddAction(c *gin.Context) {
+	err, _, _ := admin_utils.AdminPermissionCheck(c)
+	if err != nil {
+
+		common.LogError(err)
+		c.Redirect(301, "/admin/login")
+		return
+	}
+
+	c.HTML(200, "admin/configuration/email_account/add.html",
+		common.Pongo2ContextWithVersion(pongo2.Context{
+			"siteName":        common.Config.Site_name,
+			"siteDescription": common.Config.Site_description,
+		}))
+	return
+}
+
+func (co *email_account_controller) SaveAddAction(context *gin.Context) {
+
+}
