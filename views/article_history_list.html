@@ -1,0 +1,36 @@
+{% extends "base-traditional.html" %}
+{% block title %}知识库-BSMI{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="content">
+                <ul class="blog-list">
+
+                    {% for blog in blogDataList %}
+                    <li>{% if blog.CateId > 0 %}[<a href="/?cateId={{blog.CateId}}">{{ getCateFromMap(blog.CateId) }}</a>]{% endif %}
+                        <a href="/view_article_history/{{ blog.Id }}"> {{ blog.Title }}</a>  <span class="ts">{{ blog.UpdateTime }}</span>
+                        <p>{{ SubCutContent(blog.Content, 256)|safe }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="txtcenter">
+                    {% if aid %}
+
+                    <div class="paginav">
+                        <div class="paginav-btn"><a href="/article_history?aid={{ aid }}&page={{ nextPage }}">下一页</a></div>
+                        <div class="paginav-btn"><a href="/article_history?aid={{ aid }}&page={{ prevPage }}">上一页</a></div>
+                    </div>
+                    {% else %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% include "common/sidebar.html" %}
+    </div>
+</div>
+
+{% endblock %}

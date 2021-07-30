@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>知识库 - BSMI KB 基础标准矿产工业</title>
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <!-- Favicons -->
+    <meta name="theme-color" content="#7952b3">
+
+
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+
+
+    <!-- Custom styles for this template -->
+    <link href="/assets/css/dashboard.css?_={{ BuildNum }}" rel="stylesheet">
+    <link href="/assets/css/jqtree.css?_={{ BuildNum }}" rel="stylesheet">
+    <script src="//cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="/assets/js/tree.jquery.js?_={{ BuildNum }}"></script>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.1.0/build/styles/default.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.1.0/build/styles/atom-one-light.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.1.0/build/highlight.min.js"></script>
+
+
+    {{ TongjiCode |safe }}
+</head>
+<body>
+
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/">知识库</a>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
+            data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false"
+            aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <form action="/search" method="get" class="form-inline">
+        <div class="row g-3">
+            <div class="col-sm-7">
+                <input name="keyword" class="form-control form-control-dark w-100" type="text" placeholder="输入关键字搜索"
+                       aria-label="Search">
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-secondary mb-2 mgtop6">搜索</button>
+            </div>
+        </div>
+    </form>
+
+
+    <div class="navbar-nav">
+        <div class="nav-item text-nowrap">
+
+            {% if username != "" %}
+            <div style="color:white">
+                <span id="update-info"></span> 欢迎 {{ username }} |
+                <a href="/admin">管理后台</a> |
+                <a href="/admin/list-cate">分类</a> |
+                <a href="/admin/list-tag">标签</a> |
+
+                <a href="/admin/addblog">新建页面</a> |
+                <a href="/admin/addblog" id="add-sub-page">新建子页面</a> |
+
+                <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> 退出</a>
+            </div>
+            {% else %}
+
+            <a class="nav-link px-3" href="/admin/login">登录</a>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-auto col-lg-auto d-md-block bg-light sidebar collapse float-left">
+            <div class="position-sticky pt-3 leftnav">
+                <div id="tree1" class="nav flex-column" data-url="/api/nav-load"></div>
+
+
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-9 px-md-4" id="content">
+
+        </main>
+    </div>
+</div>
+
+<script type="application/javascript">
+    function versionCompare(v1, v2, options) {
+        var lexicographical = options && options.lexicographical,
+            zeroExtend = options && options.zeroExtend,
+            v1parts = v1.split('.'),
+            v2parts = v2.split('.');
+
+        function isValidPart(x) {
+            return (lexicographical ? /^\d+[A-Za-z]*$/ : /^\d+$/).test(x);
+        }
+
+        if (!v1parts.every(isValidPart) || !v2parts.every(isValidPart)) {
+            return NaN;
+        }
+
+        if (zeroExtend) {
+            while (v1parts.length < v2parts.length) v1parts.push("0");
+            while (v2parts.length < v1parts.length) v2parts.push("0");
+        }
+
+        if (!lexicographical) {
+            v1parts = v1parts.map(Number);
+            v2parts = v2parts.map(Number);
+        }
+
+        for (var i = 0; i < v1parts.length; ++i) {
+            if (v2parts.length == i) {
+                return 1;
+            }
+
+            if (v1parts[i] == v2parts[i]) {
+                continue;
+            } else if (v1parts[i] > v2parts[i]) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+
+        if (v1parts.length != v2parts.length) {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    function view_article(aid) {
+        $("#add-sub-page").attr("href", "/admin/addblog?paid=" + aid);
+        $.get("/view/" + aid, function (data) {
+                $('#content').html(data);
+                console.log("pidList:", pidList)
+
+
+                if (pidList.length > 0) {
+                    i = pidList.length - 1;
+
+                    recursiveOpenNode(pidList, i);
+                }
+            }
+        );
+
+    }
+
+    function recursiveOpenNode(pidList, i) {
+
+        console.log("i was: ", i);
+        var twr = $('#tree1');
+        var tnid = pidList[i];
+        var tnode = twr.tree('getNodeById', tnid);
+        console.log(tnode)
+
+        if (tnode != null) {
+
+            if (i == 0) {
+                twr.tree('selectNode', tnode);
+            }
+            twr.tree('openNode', tnode, function (cn) {
+                console.log('node ' + cn.name + " opened");
+            })
+            if (tnode.is_open != null) {
+
+                i = i - 1;
+                if (i >= 0) {
+                    recursiveOpenNode(pidList, i);
+                }
+            } else {
+                window.setTimeout(function () {
+
+                    console.log(tnode.is_open);
+
+                    i = i - 1;
+                    if (i >= 0) {
+                        recursiveOpenNode(pidList, i);
+                    }
+                }, 750);
+            }
+
+
+        }
+    }
+
+    var current_bsmi_kb_version = "{{ BsmiKbVersion }}";
+    //dom ready
+    $(function () {
+
+        $.get("https://raw.githubusercontent.com/cnmade/bsmi-mail-kernel/master/public/version.js", function (data) {
+            console.log("My version:" + current_bsmi_kb_version + ", remote version: " + data);
+            let versionCompare1 = versionCompare(data.substr(1), current_bsmi_kb_version.substr(1));
+            console.log("version compare result:" + versionCompare1);
+            if (versionCompare1 > 0) {
+                $('#update-info').html("<a href=\"https://github.com/cnmade/bsmi-mail-kernel/releases/tag/" + data + "\">更新</a>");
+            }
+        })
+
+
+        let handleHashChange = function () {
+            let urlHash = window.location.hash;
+            console.log('url hash: ' + urlHash);
+            let articlId = 0;
+
+            if (urlHash.length > 6) {
+                articlId = urlHash.substr(6);
+            }
+
+            if (articlId > 0) {
+                view_article(articlId)
+            } else {
+                if (urlHash.length <= 0) {
+                    view_article(1);
+                }
+            }
+        };
+        $(window).on('hashchange', handleHashChange)
+
+
+        var $tree = $('#tree1');
+        $.getJSON(
+            '/api/nav-all/',
+            function (data) {
+                $tree.tree({
+                    closedIcon: $('<span>+</span> '),
+                    openedIcon: $('<span>-</span> '),
+                    showEmptyFolder: true,
+                    data: data,
+                    //autoOpen: false,
+                    autoOpen: 1,
+                    dragAndDrop: true,
+                    onCreateLi: function (node, $li) {
+                        // Append a link to the jqtree-element div.
+                        // The link has an url '#node-[id]' and a data property 'node-id'.
+                        $li.find('.jqtree-title').html(
+                            '<a href="/#view/' + node.id + '">' + node.name + '</a>'
+                        );
+                    }
+                });
+
+                //刚进来，展示首页
+                handleHashChange();
+            }
+        );
+
+
+        //打开指定的 节点
+        // var node = $tree.tree('getNodeById', 123);
+        //    $tree.tree('openNode', node);
+
+        $('#tree1').on(
+            "tree.click",
+            function (e) {
+                //  e.preventDefault();
+                console.log(e.node.name);
+                //top.location = "/view/" + e.node.id;
+                view_article(e.node.id);
+            }
+        ).on(
+            'tree.move',
+            function (event) {
+
+                event.preventDefault();
+                // do the move first, and _then_ POST back.
+                event.move_info.do_move();
+
+
+                console.log('moved_node', event.move_info.moved_node);
+                console.log('target_node', event.move_info.target_node);
+                console.log('position', event.move_info.position);
+                console.log('previous_parent', event.move_info.previous_parent);
+
+                let move_node_id = event.move_info.moved_node.id;
+                let new_paid = 0;
+                let new_sort = null;
+                if (event.move_info.position == "after" || event.move_info.position == "before") {
+                    new_paid = event.move_info.target_node.parent.id;
+                } else {
+                    new_paid = event.move_info.target_node.id;
+                }
+
+                let parent_node = $(this).tree('getNodeById', new_paid);
+
+
+                console.log('parent node: ', parent_node);
+
+
+                if (parent_node == null) {
+                    parent_node = $tree.tree('getTree');
+                }
+
+
+                new_sort = parent_node.children;
+
+
+                console.log('new_paid', new_paid);
+                console.log('new_sort', new_sort);
+
+                console.log('parent childNodes data: ', JSON.stringify(parent_node.getData()));
+
+
+                let psort = "";
+
+                console.log('new_sort length', new_sort.length);
+                for (i = 0; i < new_sort.length; i++) {
+                    psort += new_sort[i].id + ",";
+                }
+                console.log(psort);
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/resort',
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data: JSON.stringify({move_node_id: move_node_id, new_paid: new_paid, new_sort: psort})
+                }).done(function (data) {
+                    console.log(data);
+                });
+            }
+        );
+    });
+
+
+</script>
+<script src="//cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+<script src="//cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
+        integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"
+        integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>

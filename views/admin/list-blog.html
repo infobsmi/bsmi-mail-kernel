@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}知识库-BSMI{% endblock %}
+
+{% block content %}
+
+    <style>
+        .paginav {
+            width:100%;
+            height:24px;
+            margin:20px 40px;
+            display:block;
+            clear:both;
+        }
+    </style>
+
+<div class="container">
+    <div class="content">
+        <ul class="blog-list">
+
+
+            {% for blog in blogDataList %}
+            <li><a href="/view/{{ blog.Aid }}">{{ blog.Title }}</a> 点击数({{ blog.Views}})    [<a href="/admin/editblog/{{ blog.Aid }}">编辑</a>] </li>
+            {% endfor %}
+        </ul>
+        <div class="txtcenter">
+
+            <div class="paginav">
+                <div class="paginav-btn"><a href="?page={{ nextPage }}">下一页</a></div>
+                <div class="paginav-btn"><a href="?page={{ prevPage }}">上一页</a></div>
+                </div>
+            </div>
+
+    </div>
+</div>
+{% endblock %}

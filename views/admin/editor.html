@@ -1,0 +1,75 @@
+
+<script src="/assets/js/tinymce/tinymce.min.js?_={{ BuildNum }}"></script>
+
+<script>
+    tinymce.init({
+        language: 'zh_CN',
+        quickbars_insert_toolbar: false,
+        selector: "textarea",
+        plugins: 'print preview  paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+        imagetools_cors_hosts: ['picsum.photos'],
+        automatic_uploads: true,
+        menubar: 'file edit view insert format tools table help',
+        toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+        extended_valid_elements: "pre[class],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
+
+        codesample_languages: [
+            {text: 'HTML/XML', value: 'html'},
+            {text: 'Shell', value: 'shell'},
+            {text: 'BAT/CMD', value: 'cmd'},
+            {text: 'Kotlin', value: 'kotlin'},
+            {text: 'JavaScript', value: 'javascript'},
+            {text: 'CSS', value: 'css'},
+            {text: 'PHP', value: 'php'},
+            {text: 'Ruby', value: 'ruby'},
+            {text: 'Perl', value: 'perl'},
+            {text: 'Python', value: 'python'},
+            {text: 'Java', value: 'java'},
+            {text: 'C', value: 'c'},
+            {text: 'C#', value: 'csharp'},
+            {text: 'Rust', value: 'rust'},
+            {text: 'Go', value: 'go'},
+            {text: 'Java', value: 'Java'},
+            {text: 'Scala', value: 'scala'},
+            {text: 'C++', value: 'cpp'}
+        ],
+        images_upload_handler: function (blobInfo, success, failure, progress) {
+            var xhr, formData;
+
+            xhr = new XMLHttpRequest();
+            xhr.withCredentials = false;
+            xhr.open('POST', '/admin/fileupload');
+
+            xhr.upload.onprogress = function (e) {
+                progress(e.loaded / e.total * 100);
+            };
+
+            xhr.onload = function() {
+                var json;
+
+                if (xhr.status < 200 || xhr.status >= 300) {
+                    failure(xhr.responseText);
+                    return;
+                }
+
+                json = JSON.parse(xhr.responseText);
+
+                if (!json || typeof json.location != 'string') {
+                    failure('返回结果非JSON: ' + xhr.responseText);
+                    return;
+                }
+
+                success(json.location);
+            };
+
+            xhr.onerror = function () {
+                failure('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
+            };
+
+            formData = new FormData();
+            formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+            xhr.send(formData);
+        }
+    });
+</script>

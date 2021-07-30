@@ -1,0 +1,127 @@
+body {
+    font-family:  Helvetica, arial, freesans, clean, sans-serif;
+    font-size: 14px;
+    background-color: #E8E8E8;
+}
+
+.navbar {
+    margin-bottom: 10px;
+}
+
+li.mActive {
+    border-bottom: #CCC 2px solid;
+}
+div.paginav-btn {
+    float:left;
+    width:150px;
+    text-align:center;
+    padding: 10px;
+    border: #cccccc 1px solid;
+    margin: 10px;
+}
+div.paginav-btn:hover {
+    cursor: pointer;
+    background-color: #CCFFEE;
+}
+div.paginav-btn > a {
+    display: inline-block;
+}
+div.paginav-btn > a:hover{
+    text-decoration: unset;
+}
+.content {
+    background-color: #FFF;
+    padding: 24px 48px;
+    border-right: #EEE 1px solid;
+}
+.footer {
+    padding: 24px 48px;
+}
+div.sidebar {
+}
+div.container > .row {
+    background:#FFF;
+}
+.txtcenter {
+    text-align: center;
+}
+
+.pagination {
+    padding-left: 20px
+}
+
+li > span.ts {
+    color: #cccccc;
+    float: right;
+}
+
+div.sidebar > p > img {
+    max-width: 150px;
+}
+div.sidebar > p {
+    margin-left: 4px;
+}
+
+div.blog-body > p {
+    font-size: 16px;
+    line-height: 1.4;
+    color: #444;
+    overflow-wrap: break-word;
+}
+div.blog-body > pre {
+    overflow-x: auto;
+    white-space: pre-wrap;
+    display: block;
+}
+
+div.blog-body > p > img {
+    max-width: 750px;
+}
+.blog-list > li {
+    padding: 6px 10px;
+}
+
+.blog-list > li a {
+    font-size: 14px;
+}
+
+.blog-title-box {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+#blog-title {
+    font-size: 24px;
+    font-family: Helvetica, arial, freesans, clean, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol';
+    line-height: 28px;
+    font-weight: normal;
+}
+
+.blog-orig {
+    margin: 20px 0px;
+    color: #DDD;
+    text-align: right;
+}
+
+.h10 {
+    height: 10px
+}
+
+.h20 {
+    height: 20px
+}
+
+.h100 {
+    height: 100px
+}
+.h900 {
+    height: 900px
+}
+
+.tag-cloud > span > a {
+    padding: 6px 12px;
+    word-break: keep-all;
+}
+.nav>li {
+    padding-top:36px;
+}

@@ -1,0 +1,40 @@
+{% extends "base-traditional.html" %}
+{% block title %}知识库-BSMI{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="content">
+                <ul class="blog-list">
+
+                    {% for blog in blogDataList %}
+                    <li>{% if blog.CateId > 0 %}[<a href="/?cateId={{blog.CateId}}">{{ getCateFromMap(blog.CateId) }}</a>]{% endif %}
+                        <a href="/#view/{{ blog.Aid }}"> {{ blog.Title }}</a>  <span class="ts">{{ blog.PublishTime }}</span>
+                        <p>{{ SubCutContent(blog.Content, 256)|safe }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="txtcenter">
+                    {% if keyword %}
+
+                    <div class="paginav">
+                        <div class="paginav-btn"><a href="/search?keyword={{ keyword }}&page={{ nextPage }}">下一页</a></div>
+                        <div class="paginav-btn"><a href="/search?keyword={{ keyword }}&page={{ prevPage }}">上一页</a></div>
+                    </div>
+                    {% else %}
+                    <div class="paginav">
+                        <div class="paginav-btn"><a href="/?{% if keyword %}keyword={{keyword}}&{% endif %}{% if cateId %}cateId={{cateId}}&{% endif %}{% if tagId %}tagId={{tagId}}&{% endif %}page={{ nextPage }}">下一页</a></div>
+                        <div class="paginav-btn"><a href="/?{% if keyword %}keyword={{keyword}}&{% endif %}{% if cateId %}cateId={{cateId}}&{% endif %}{% if tagId %}tagId={{tagId}}&{% endif %}page={{ prevPage }}">上一页</a></div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% include "common/sidebar.html" %}
+    </div>
+</div>
+
+{% endblock %}

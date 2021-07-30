@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}知识库-BSMI{% endblock %}
+
+{% block content %}
+
+{% if CaptchaEnabled == 1 %}
+<script src="https://hcaptcha.com/1/api.js" async defer></script>
+{% endif %}
+
+<style>
+    .container {
+        width: 50%;
+        height: 50%;
+        margin: 10px auto;
+        text-align: center
+    }
+
+    .container td {
+        padding: 10px;
+    }
+    form.login-form {
+        width: 350px;
+        margin: 0 auto;
+    }
+</style>
+<div class="container">
+    <form action="/admin/loginStep3" method="post" enctype="multipart/form-data" class="login-form">
+        <table>
+            <tr>
+                <td>两步验证码:</td>
+                <td><input type="text" name="two_auth_code"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>    <div class="h-captcha" data-sitekey="{{ SiteKey }}"></div>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="登录"></td>
+            </tr>
+        </table>
+    </form>
+</div>
+{% endblock %}

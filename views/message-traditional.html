@@ -1,0 +1,20 @@
+
+{% extends "base-traditional.html" %}
+{% block title %}知识库-BSMI{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="content">
+            <div class="txtcenter">
+                <p>{{ message }} </p>
+                <p>{% if url != "" %}
+                    <a href="{{ url}}">好的</a>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

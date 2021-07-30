@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}知识库-BSMI{% endblock %}
+
+{% block content %}
+
+    <style>
+        .paginav {
+            width:100%;
+            height:24px;
+            margin:20px 40px;
+            display:block;
+            clear:both;
+        }
+    </style>
+
+<div class="container">
+    <div class="content">
+        <div><a href="/admin/add-cate">新增分类</a></div>
+        <div>
+            <form action="/admin/save-add-cate" method="post" enctype="multipart/form-data" class="form-horizontal" role="form">
+                <div class="form-group"><label>分类名称:</label><input name="name" class="form-control"></div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <ul class="blog-list">
+
+
+            {% for cate in categories %}
+            <li> ID: {{cate.ID}}  名称：{{ cate.Name }}    [<a href="/admin/edit-cate/{{ cate.ID }}">编辑</a>] </li>
+            {% endfor %}
+        </ul>
+
+    </div>
+</div>
+{% endblock %}

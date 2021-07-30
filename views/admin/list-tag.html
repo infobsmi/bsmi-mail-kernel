@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}知识库-BSMI{% endblock %}
+
+{% block content %}
+
+    <style>
+        .paginav {
+            width:100%;
+            height:24px;
+            margin:20px 40px;
+            display:block;
+            clear:both;
+        }
+    </style>
+
+<div class="container">
+    <div class="content">
+        <div><a href="/admin/add-tag">新增分类</a></div>
+        <div>
+            <form action="/admin/save-add-tag" method="post" enctype="multipart/form-data" class="form-horizontal" role="form">
+                <div class="form-group"><label>标签名称:</label><input name="name" class="form-control"></div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit">保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="blog-list">
+
+
+            {% for tag in tags %}
+            <span> <a href="/?tagId={{tag.ID}}">{{ tag.Name }}({{ tag.TotalNums }})</a>   </span>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

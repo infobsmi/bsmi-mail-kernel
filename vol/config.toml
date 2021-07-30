@@ -1,0 +1,46 @@
+dbdsn="file:./vol/db.sqlite"
+admin_user = "admin"
+admin_password = "admin"
+admin_email = "yourname@domain.com"
+site_name = "知识库"
+site_description = "Linux, opensource, golang"
+site_url = "http://localhost:8005"
+srvMode="debug"
+object_storage_type = 1
+captcha_enabled=0
+h_captcha_site_key= ""
+h_captcha_secret_key=""
+two_auth_type=2# 1 smtp, 2 mailgun
+[object_storage]
+aws_access_key_id = "******"
+aws_secret_access_key = "******"
+aws_region = "us-east-1"
+aws_bucket = "www.domain.com"
+cdn_url = "//www.domain.com"
+[email_config]
+from_email=""
+smtp_host=""
+smtp_port=465
+smtp_user=""
+smtp_password=""
+[mailgun_config]
+from_email=""
+domain=""
+api_key=""
+[backup_config]
+backup_enabled=1
+backup_dir="d:/backup"
+[tongji_config]
+tongji_enabled=1
+tongji_code='''
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.async = true;
+        hm.src = "https://hm.baidu.com/hm.js?8b2a3c485d93157132004c2e990b9892";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+'''

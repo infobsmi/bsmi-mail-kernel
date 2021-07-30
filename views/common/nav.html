@@ -1,0 +1,20 @@
+<ul class="nav navbar-nav navbar-right">
+    <li>
+        {% if username != "" %}
+            <div style="color:white">
+                欢迎 {{ username }} |
+                <a href="/admin">管理后台</a> |
+                <a href="/admin/list-cate">分类</a> |
+                <a href="/admin/list-tag">标签</a> |
+
+                <a href="/admin/addblog">发文</a> |
+                <a href="/admin/logout"><i class="fas fa-sign-out-alt"></i> 退出</a>
+            </div>
+        {% else %}
+
+        {% endif %}
+        <form action="/search" method="get" style="margin-top:10px">
+            <input name="keyword" value="{{ keyword }}"><input type="submit" value="搜索" class="btn btn-primary" style="margin:0px 10px">
+        </form>
+    </li>
+</ul>

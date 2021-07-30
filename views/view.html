@@ -1,0 +1,33 @@
+<div class="blog-title-box">
+    <h2 id="blog-title">{{ out.title }}</h2>
+</div>
+<div class="blog-body">
+    {{ out.content|safe }}
+</div>
+<div class="blog-orig">
+    <p>
+        分类: <a href="/?cateId={{ out.cateId }}">{{ out.cateName }}</a>
+        标签: {% for tag in tags %} <a href="/?tagId={{ tag.ID }}">{{ tag.Name }}</a> {% endfor %}
+
+        发布于: {{ out.publishTime }}, 更新于: {{ out.updateTime }}
+    </p>
+
+    {% if username != "" %}
+
+    <p><a href="/admin/editblog/{{ out.aid }}">编辑内容</a> | <a href="/article_history?aid={{ out.aid }}">历史记录</a></p>
+    {% else %}
+
+    {% endif %}
+</div>
+
+<script type="application/javascript">
+ hljs.highlightAll();
+
+ var pidList = [ {{ pidList }} ];
+
+
+ //TODO
+ //把菜单收起来
+ //依次打开菜单
+ //最后选中当前标题
+</script>
