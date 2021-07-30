@@ -45,8 +45,6 @@ func LogInfoF(msg string, v interface{}) {
 	}
 }
 
-
-
 /**
  * close rows defer
  */
@@ -89,9 +87,9 @@ func GetNewDb(config *vo.AppConfig) *gorm.DB {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
-			SlowThreshold: time.Second,   // Slow SQL threshold
+			SlowThreshold: time.Second, // Slow SQL threshold
 			LogLevel:      logger.Info, // Log level
-			Colorful:      false,         // Disable color
+			Colorful:      false,       // Disable color
 		},
 	)
 	db, err := gorm.Open(sqlite.Open(config.Dbdsn), &gorm.Config{
@@ -102,44 +100,27 @@ func GetNewDb(config *vo.AppConfig) *gorm.DB {
 		panic(err.Error())
 	}
 
-	err = db.AutoMigrate(&model.Category{})
+	tableList := make([]interface{}, 0)
 
-	if err != nil {
-		panic(err.Error())
+	tableList = append(tableList,
+		&model.Category{},
+		&model.Tag{},
+		&model.Article{},
+		&model.ArticleHistory{},
+		&model.TwoAuth{},
+		&model.FailBan{},
+		&model.EmailAccount{},
+	)
+
+	for _, i := range tableList {
+
+		err = db.AutoMigrate(i)
+
+		if err != nil {
+			panic(err.Error())
+		}
+
 	}
-
-	err = db.AutoMigrate(&model.Tag{})
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-
-	err = db.AutoMigrate(&model.Article{})
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	err = db.AutoMigrate(&model.ArticleHistory{})
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	err = db.AutoMigrate(&model.TwoAuth{})
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-
-	err = db.AutoMigrate(&model.FailBan{})
-
-	if err != nil {
-		panic(err.Error())
-	}
-
 
 	return db
 }
@@ -158,25 +139,23 @@ func GetConfig() *vo.AppConfig {
 	}
 	var config vo.AppConfig
 	if err := toml.Unmarshal(buf, &config); err != nil {
-		Sugar.Infof(_cm + " error: %+v", err)
+		Sugar.Infof(_cm+" error: %+v", err)
 	}
 	return &config
 }
 
-
-
 var (
-	Config    *vo.AppConfig
-	NewDb     *gorm.DB
-	Logger, _ = zap.NewProduction()
-	Sugar *zap.SugaredLogger
+	Config        *vo.AppConfig
+	NewDb         *gorm.DB
+	Logger, _     = zap.NewProduction()
+	Sugar         *zap.SugaredLogger
 	BsmiKbVersion string
 	HCaptchClient *hcaptcha.Client
 )
 
 func InitApp() {
 	Config = GetConfig()
-//	gin.SetMode(Config.SrvMode)
+	//	gin.SetMode(Config.SrvMode)
 	gin.SetMode(gin.DebugMode)
 	NewDb = GetNewDb(Config)
 	defer Logger.Sync()
@@ -185,16 +164,17 @@ func InitApp() {
 	HCaptchClient = hcaptcha.New(Config.HCaptchaSecretKey)
 }
 
-func OutPutHtml( c *gin.Context, s string) {
+func OutPutHtml(c *gin.Context, s string) {
 	c.Header("Content-Type", "text/html;charset=UTF-8")
 	c.String(200, "%s", s)
 	return
 }
-func OutPutText( c *gin.Context, s string) {
+func OutPutText(c *gin.Context, s string) {
 	c.Header("Content-Type", "text/plain;charset=UTF-8")
 	c.String(200, "%s", s)
 	return
 }
+
 /**
  * 截取指定长度的字符串，中文
  */
@@ -218,4 +198,3 @@ func SubCutContent(content string, length int) string {
 
 	return string(tmpContent[0:length])
 }
-
