@@ -24,9 +24,9 @@
 
             {% for elm in emailAccountList %}
             <tr>
-                <td><a href="/view/{{ elm.Id }}">{{ blog.Email }}</a> </td>
+                <td><a href="/view/{{ elm.Id }}">{{ elm.Email }}</a> </td>
                 <td>
-                    [<a href="/admin/configuration/{{ blog.Aid }}">编辑</a>] </td>
+                    [<a href="/admin/configuration/{{ elm.Id }}">编辑</a>] </td>
             </tr>
             {% endfor %}
         </table>

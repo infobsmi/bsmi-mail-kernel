@@ -146,7 +146,7 @@ func main() {
 		email_account_co := configuration.NewEmailAccountController()
 		adminConfigurationRouteGroup.GET("/email_account/list", email_account_co.ListAction)
 		adminConfigurationRouteGroup.GET("/email_account/add", email_account_co.AddAction)
-		adminConfigurationRouteGroup.GET("/email_account/saveAdd", email_account_co.SaveAddAction)
+		adminConfigurationRouteGroup.POST("/email_account/saveAdd", email_account_co.SaveAddAction)
 
 
 	}
