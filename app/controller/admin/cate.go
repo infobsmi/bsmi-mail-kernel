@@ -1,8 +1,9 @@
-package admincontroller
+package admin
 
 import (
 	"errors"
 	"github.com/cnmade/bsmi-mail-kernel/app/orm/model"
+	"github.com/cnmade/bsmi-mail-kernel/app/utils/admin_utils"
 	"github.com/cnmade/bsmi-mail-kernel/app/vo"
 	"github.com/cnmade/bsmi-mail-kernel/pkg/common"
 	vo2 "github.com/cnmade/bsmi-mail-kernel/pkg/common/vo"
@@ -15,7 +16,7 @@ import (
 )
 
 func SaveEditCateCtr(c *gin.Context) {
-	err, _, _ := AdminPermissionCheck(c)
+	err, _, _ := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -60,7 +61,7 @@ func SaveEditCateCtr(c *gin.Context) {
 }
 
 func ListCateCtr(c *gin.Context) {
-	err, username, isAdmin := AdminPermissionCheck(c)
+	err, username, isAdmin := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -84,7 +85,7 @@ func ListCateCtr(c *gin.Context) {
 }
 
 func AddCateCtr(c *gin.Context) {
-	err, username, isAdmin := AdminPermissionCheck(c)
+	err, username, isAdmin := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -103,7 +104,7 @@ func AddCateCtr(c *gin.Context) {
 }
 
 func SaveAddCateCtr(c *gin.Context) {
-	err, _, _ := AdminPermissionCheck(c)
+	err, _, _ := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -150,7 +151,7 @@ func SaveAddCateCtr(c *gin.Context) {
 }
 
 func EditCateCtr(c *gin.Context) {
-	err, username, isAdmin := AdminPermissionCheck(c)
+	err, username, isAdmin := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)

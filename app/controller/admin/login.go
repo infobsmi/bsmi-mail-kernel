@@ -1,4 +1,4 @@
-package admincontroller
+package admin
 
 import (
 	"github.com/cnmade/bsmi-mail-kernel/app/orm/model"

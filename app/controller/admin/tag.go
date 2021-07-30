@@ -1,7 +1,8 @@
-package admincontroller
+package admin
 
 import (
 	"github.com/cnmade/bsmi-mail-kernel/app/orm/model"
+	"github.com/cnmade/bsmi-mail-kernel/app/utils/admin_utils"
 	"github.com/cnmade/bsmi-mail-kernel/app/vo"
 	"github.com/cnmade/bsmi-mail-kernel/pkg/common"
 	vo2 "github.com/cnmade/bsmi-mail-kernel/pkg/common/vo"
@@ -14,7 +15,7 @@ import (
 )
 
 func ListTagCtr(c *gin.Context) {
-	err, username, isAdmin := AdminPermissionCheck(c)
+	err, username, isAdmin := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -39,7 +40,7 @@ func ListTagCtr(c *gin.Context) {
 }
 
 func SaveAddTagCtr(c *gin.Context) {
-	err, _, _ := AdminPermissionCheck(c)
+	err, _, _ := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)

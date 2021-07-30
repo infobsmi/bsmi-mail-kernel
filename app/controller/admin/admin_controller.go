@@ -1,4 +1,4 @@
-package admincontroller
+package admin
 
 import (
 	"bytes"
@@ -9,11 +9,11 @@ import (
 	awsSession "github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/cnmade/bsmi-mail-kernel/app/orm/model"
+	"github.com/cnmade/bsmi-mail-kernel/app/utils/admin_utils"
 	"github.com/cnmade/bsmi-mail-kernel/pkg/common"
 	"github.com/cnmade/bsmi-mail-kernel/pkg/common/vo"
 	"github.com/disintegration/imaging"
 	"github.com/flosch/pongo2/v4"
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/h2non/filetype"
 	gonanoid "github.com/matoous/go-nanoid"
@@ -29,7 +29,19 @@ import (
 	"time"
 )
 
+
+
 const MaxImgWidth = 750
+
+
+
+type admin_controller struct {
+
+}
+
+func NewAdminController() *admin_controller {
+	return &admin_controller{}
+}
 
 // AdminLoginForm is the login form for Admin
 type AdminLoginForm struct {
@@ -37,27 +49,9 @@ type AdminLoginForm struct {
 	Password string `form:"password" binding:"required"`
 }
 
-func AdminPermissionCheck(c *gin.Context) (err error, username interface{}, isAdmin interface{}) {
-	session := sessions.Default(c)
-	username = session.Get("username")
-	isAdmin = session.Get("isAdmin")
-	if username == nil {
-		common.Sugar.Infof("username was nil")
-		return errors.New("需要登录"), nil, nil
-	}
-	common.Sugar.Infof("username was: %s", username.(string))
-	if isAdmin == nil {
-		return errors.New("需要管理员权限"), nil, nil
-	}
-	if isAdmin != "yes" {
-		return errors.New("需要管理员权限！"), nil, nil
-	}
-	return nil, username, isAdmin
-}
-
 // Export
-func ExportCtr(c *gin.Context) {
-	err, _, _ := AdminPermissionCheck(c)
+func (co *admin_controller) ExportCtr(c *gin.Context) {
+	err, _, _ := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 		common.LogError(err)
 		c.Redirect(301, "/admin/login")
@@ -79,9 +73,9 @@ func ExportCtr(c *gin.Context) {
 	c.JSON(http.StatusOK, blogDataList)
 }
 
-func Files(c *gin.Context) {
+func  (co *admin_controller) Files(c *gin.Context) {
 
-	err, username, isAdmin := AdminPermissionCheck(c)
+	err, username, isAdmin := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 		common.LogError(err)
 		c.Redirect(301, "/admin/login")
@@ -126,9 +120,9 @@ func Files(c *gin.Context) {
 		}))
 	return
 }
-func FileUpload(c *gin.Context) {
+func  (co *admin_controller) FileUpload(c *gin.Context) {
 
-	err, _, _ := AdminPermissionCheck(c)
+	err, _, _ := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -137,14 +131,14 @@ func FileUpload(c *gin.Context) {
 	}
 	if common.Config.ObjectStorageType == 1 {
 
-		preFileName, done := UploadByLocalStorage(c)
+		preFileName, done := co.UploadByLocalStorage(c)
 		if done {
 			return
 		}
 		c.JSON(200, gin.H{"location": preFileName})
 	} else {
 
-		preFileName, done := UploadByAwsS3(c)
+		preFileName, done := co.UploadByAwsS3(c)
 		if done {
 			return
 		}
@@ -152,7 +146,7 @@ func FileUpload(c *gin.Context) {
 	}
 }
 
-func UploadByLocalStorage(c *gin.Context) (string, bool) {
+func  (co *admin_controller) UploadByLocalStorage(c *gin.Context) (string, bool) {
 
 	file, fileHeader, err := c.Request.FormFile("file")
 
@@ -253,7 +247,7 @@ func UploadByLocalStorage(c *gin.Context) (string, bool) {
 	return preFileName, false
 }
 
-func UploadByAwsS3(c *gin.Context) (string, bool) {
+func  (co *admin_controller) UploadByAwsS3(c *gin.Context) (string, bool) {
 	s, err := awsSession.NewSession(&aws.Config{
 		Region:   aws.String(common.Config.ObjectStorage.Aws_region),
 		Endpoint: aws.String("https://s3.us-west-001.backblazeb2.com"),

@@ -1,4 +1,4 @@
-package admincontroller
+package admin
 
 import (
 	"encoding/json"
@@ -7,6 +7,7 @@ import (
 	"github.com/cnmade/bsmi-mail-kernel/app/orm/model"
 	"github.com/cnmade/bsmi-mail-kernel/app/service/category_service"
 	"github.com/cnmade/bsmi-mail-kernel/app/service/tag_service"
+	"github.com/cnmade/bsmi-mail-kernel/app/utils/admin_utils"
 	"github.com/cnmade/bsmi-mail-kernel/app/vo"
 	"github.com/cnmade/bsmi-mail-kernel/pkg/common"
 	vo2 "github.com/cnmade/bsmi-mail-kernel/pkg/common/vo"
@@ -21,8 +22,17 @@ import (
 	"time"
 )
 
-func DeleteBlogCtr(c *gin.Context) {
-	err, _, _ := AdminPermissionCheck(c)
+
+type blog_controller struct {
+
+}
+
+func NewBlogController() *blog_controller {
+	return &blog_controller{}
+}
+
+func (co *blog_controller) DeleteBlogCtr(c *gin.Context) {
+	err, _, _ := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -46,8 +56,8 @@ func DeleteBlogCtr(c *gin.Context) {
 }
 
 // ListBlogCtr is list blogs for admin
-func ListBlogCtr(c *gin.Context) {
-	err, username, isAdmin := AdminPermissionCheck(c)
+func (co *blog_controller)  ListBlogCtr(c *gin.Context) {
+	err, username, isAdmin := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -100,8 +110,8 @@ func ListBlogCtr(c *gin.Context) {
 	return
 }
 
-func EditBlogCtr(c *gin.Context) {
-	err, username, isAdmin := AdminPermissionCheck(c)
+func (co *blog_controller)  EditBlogCtr(c *gin.Context) {
+	err, username, isAdmin := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -152,8 +162,8 @@ func EditBlogCtr(c *gin.Context) {
 	return
 }
 
-func SaveBlogEditCtr(c *gin.Context) {
-	err, _, _ := AdminPermissionCheck(c)
+func (co *blog_controller)  SaveBlogEditCtr(c *gin.Context) {
+	err, _, _ := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -220,7 +230,7 @@ func SaveBlogEditCtr(c *gin.Context) {
 
 	//处理保存编辑帖子
 
-	tagIdStr, tagIds := processTags(BI.Tags)
+	tagIdStr, tagIds := co.processTags(BI.Tags)
 
 	blogItem.Aid = BI.Aid
 	blogItem.Title = BI.Title
@@ -244,12 +254,12 @@ func SaveBlogEditCtr(c *gin.Context) {
 
 }
 
-func AddBlogCtr(c *gin.Context) {
+func (co *blog_controller)  AddBlogCtr(c *gin.Context) {
 	paid, err := strconv.Atoi(c.DefaultQuery("paid", "0"))
 	if err != nil {
 		common.Sugar.Fatal(err)
 	}
-	err, _, _ = AdminPermissionCheck(c)
+	err, _, _ = admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -268,8 +278,8 @@ func AddBlogCtr(c *gin.Context) {
 	return
 }
 
-func SaveBlogAddCtr(c *gin.Context) {
-	err, _, _ := AdminPermissionCheck(c)
+func  (co *blog_controller)  SaveBlogAddCtr(c *gin.Context) {
+	err, _, _ := admin_utils.AdminPermissionCheck(c)
 	if err != nil {
 
 		common.LogError(err)
@@ -297,10 +307,10 @@ func SaveBlogAddCtr(c *gin.Context) {
 		common.ShowUMessage(c, &vo2.Umsg{Msg: "获取时间错误", Url: "/"})
 		return
 	}
-	aid := getLastAid()
+	aid := co.getLastAid()
 	nextAid := aid + 1
 
-	tagIdStr, tagIds := processTags(BI.Tags)
+	tagIdStr, tagIds := co.processTags(BI.Tags)
 
 	blogItem := model.Article{
 		Aid:           nextAid,
@@ -329,7 +339,7 @@ func SaveBlogAddCtr(c *gin.Context) {
 
 }
 
-func processTags(tmpTags string) ([]byte, []int64) {
+func (co *blog_controller)  processTags(tmpTags string) ([]byte, []int64) {
 	var tagIds []int64
 	var tagIdStr []byte
 	if len(tmpTags) > 0 {
@@ -347,7 +357,7 @@ func processTags(tmpTags string) ([]byte, []int64) {
 	return tagIdStr, tagIds
 }
 
-func getLastAid() int64 {
+func (co *blog_controller)  getLastAid() int64 {
 	var blogItem model.Article
 	result := common.NewDb.Last(&blogItem)
 

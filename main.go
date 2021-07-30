@@ -2,7 +2,8 @@ package main
 
 import (
 	. "github.com/cnmade/bsmi-mail-kernel/app/controller"
-	"github.com/cnmade/bsmi-mail-kernel/app/controller/admincontroller"
+	"github.com/cnmade/bsmi-mail-kernel/app/controller/admin"
+	"github.com/cnmade/bsmi-mail-kernel/app/controller/admin/configuration"
 	"github.com/cnmade/bsmi-mail-kernel/app/service/backup_service"
 	"github.com/cnmade/bsmi-mail-kernel/app/service/fail_ban_service"
 	"github.com/cnmade/bsmi-mail-kernel/pkg/common"
@@ -85,33 +86,67 @@ func main() {
 	r.GET("/user/logout", fc.LogoutCtr)
 	r.GET("/countview/:id", fc.CountViewCtr)
 
-	admin := r.Group("/admin")
+	adminRouteGroup := r.Group("/admin")
 	{
-		admin.GET("/", admincontroller.ListBlogCtr)
-		admin.GET("/login", admincontroller.LoginCtr)
-		admin.POST("/login-process", admincontroller.LoginProcessCtr)
-		admin.POST("/loginStep3", admincontroller.LoginStep3Ctr)
-		admin.GET("/logout", admincontroller.LogoutCtr)
-		admin.GET("/addblog", admincontroller.AddBlogCtr)
-		admin.POST("/save-blog-add", admincontroller.SaveBlogAddCtr)
-		admin.GET("/listblog", admincontroller.ListBlogCtr)
-		admin.GET("/export", admincontroller.ExportCtr)
-		admin.GET("/deleteblog/:id", admincontroller.DeleteBlogCtr)
-		admin.POST("/save-blog-edit", admincontroller.SaveBlogEditCtr)
-		admin.GET("/editblog/:id", admincontroller.EditBlogCtr)
+		admin_co := admin.NewAdminController()
+
+		blog_co := admin.NewBlogController()
+
+		adminRouteGroup.GET("/", blog_co.ListBlogCtr)
+
+		adminRouteGroup.GET("/login", admin.LoginCtr)
+		adminRouteGroup.POST("/login-process", admin.LoginProcessCtr)
+		adminRouteGroup.POST("/loginStep3", admin.LoginStep3Ctr)
+		adminRouteGroup.GET("/logout", admin.LogoutCtr)
+		adminRouteGroup.GET("/export", admin_co.ExportCtr)
 
 
-		admin.GET("/list-cate", admincontroller.ListCateCtr)
-		admin.POST("/save-edit-cate", admincontroller.SaveEditCateCtr)
-		admin.GET("/edit-cate/:id", admincontroller.EditCateCtr)
-		admin.GET("/add-cate", admincontroller.AddCateCtr)
-		admin.POST("/save-add-cate", admincontroller.SaveAddCateCtr)
 
-		admin.GET("/list-tag", admincontroller.ListTagCtr)
+		adminRouteGroup.GET("/list-cate", admin.ListCateCtr)
+		adminRouteGroup.POST("/save-edit-cate", admin.SaveEditCateCtr)
+		adminRouteGroup.GET("/edit-cate/:id", admin.EditCateCtr)
+		adminRouteGroup.GET("/add-cate", admin.AddCateCtr)
+		adminRouteGroup.POST("/save-add-cate", admin.SaveAddCateCtr)
+
+		adminRouteGroup.GET("/list-tag", admin.ListTagCtr)
 
 
-		admin.GET("/files", admincontroller.Files)
-		admin.POST("/fileupload", admincontroller.FileUpload)
+		adminRouteGroup.GET("/files", admin_co.Files)
+		adminRouteGroup.POST("/fileupload", admin_co.FileUpload)
+	}
+
+
+
+
+	// 博客相关
+	adminBlogRouteGroup := r.Group("/admin/blog")
+	{
+
+		//Email account
+
+		blog_co := admin.NewBlogController()
+		adminBlogRouteGroup.GET("/list", blog_co.ListBlogCtr)
+
+
+		adminBlogRouteGroup.GET("/addblog", blog_co.AddBlogCtr)
+		adminBlogRouteGroup.POST("/save-blog-add", blog_co.SaveBlogAddCtr)
+		adminBlogRouteGroup.GET("/listblog", blog_co.ListBlogCtr)
+		adminBlogRouteGroup.GET("/deleteblog/:id", blog_co.DeleteBlogCtr)
+		adminBlogRouteGroup.POST("/save-blog-edit", blog_co.SaveBlogEditCtr)
+		adminBlogRouteGroup.GET("/editblog/:id", blog_co.EditBlogCtr)
+
+	}
+
+	//配置设置
+	adminConfigurationRouteGroup := r.Group("/admin/configuration")
+	{
+
+		//Email account
+
+		email_account_co := configuration.NewEmailAccountController()
+		adminConfigurationRouteGroup.GET("/email_account/list", email_account_co.ListAction)
+
+
 	}
 
 
