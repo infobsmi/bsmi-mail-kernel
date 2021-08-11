@@ -1,10 +1,11 @@
 package configuration
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"github.com/axgle/mahonia"
 	"github.com/cnmade/bsmi-mail-kernel/app/orm/model"
-	"github.com/cnmade/bsmi-mail-kernel/app/utils/admin_utils"
 	"github.com/cnmade/bsmi-mail-kernel/app/vo"
 	"github.com/cnmade/bsmi-mail-kernel/pkg/common"
 	vo2 "github.com/cnmade/bsmi-mail-kernel/pkg/common/vo"
@@ -14,7 +15,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"gorm.io/gorm"
+	"io"
+	"io/ioutil"
 	"log"
+	"mime"
 	"net/http"
 	"strconv"
 )
@@ -30,13 +34,7 @@ func NewEmailAccountController() *email_account_controller {
 
 
 func (co *email_account_controller) ListAction(c *gin.Context) {
-	err, username, isAdmin := admin_utils.AdminPermissionCheck(c)
-	if err != nil {
 
-		common.LogError(err)
-		c.Redirect(301, "/admin/login")
-		return
-	}
 	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if err != nil {
 		log.Fatal(err)
@@ -70,8 +68,6 @@ func (co *email_account_controller) ListAction(c *gin.Context) {
 			"siteName":        common.Config.Site_name,
 			"siteDescription": common.Config.Site_description,
 			"emailAccountList":    emailAccountList,
-			"username":        username.(string),
-			"isAdmin":        isAdmin.(string),
 			"prevPage":        fmt.Sprintf("%d", prev_page),
 			"nextPage":        fmt.Sprintf("%d", next_page),
 		}))
@@ -79,13 +75,6 @@ func (co *email_account_controller) ListAction(c *gin.Context) {
 }
 
 func (co *email_account_controller) AddAction(c *gin.Context) {
-	err, _, _ := admin_utils.AdminPermissionCheck(c)
-	if err != nil {
-
-		common.LogError(err)
-		c.Redirect(301, "/admin/login")
-		return
-	}
 
 	c.HTML(200, "admin/configuration/email_account/add.html",
 		common.Pongo2ContextWithVersion(pongo2.Context{
@@ -96,15 +85,16 @@ func (co *email_account_controller) AddAction(c *gin.Context) {
 }
 
 
+func ConvertToStr(src string, srcCode string, tagCode string) string {
+	srcCoder := mahonia.NewDecoder(srcCode)
+	srcResult := srcCoder.ConvertString(src)
+	tagCoder := mahonia.NewDecoder(tagCode)
+	_, cdata, _ := tagCoder.Translate([]byte(srcResult), true)
+	result := string(cdata)
+	return result
+}
 
 func (co *email_account_controller) TestAction(c *gin.Context) {
-	err, _, _ := admin_utils.AdminPermissionCheck(c)
-	if err != nil {
-
-		common.LogError(err)
-		c.Redirect(301, "/admin/login")
-		return
-	}
 
 
 	id := c.Param("id")
@@ -172,8 +162,43 @@ func (co *email_account_controller) TestAction(c *gin.Context) {
 	}()
 
 	log.Println("Last 4 messages:")
+
+
+	dec :=new(mime.WordDecoder)
+	dec.CharsetReader= func(charset string, input io.Reader) (io.Reader, error) {
+		common.Sugar.Infof("charset: %+v", charset)
+		switch charset {
+		case "gb2312","gbk","gb18030":
+			content, err := ioutil.ReadAll(input)
+			if err != nil {
+				return nil, err
+			}
+			//ret:=bytes.NewReader(content)
+			//ret:=transform.NewReader(bytes.NewReader(content), simplifiedchinese.HZGB2312.NewEncoder())
+
+			utf8str:=ConvertToStr(string(content),"gbk","utf-8")
+			t:=bytes.NewReader([]byte(utf8str))
+			//ret:=utf8.DecodeRune(t)
+			//log.Println(ret)
+			return t, nil
+		default:
+			content, err := ioutil.ReadAll(input)
+			if err != nil {
+				return nil, err
+			}
+			t:=bytes.NewReader(content)
+			//ret:=utf8.DecodeRune(t)
+			//log.Println(ret)
+			return t, nil
+
+		}
+	}
+
 	for msg := range messages {
-		log.Println("* " + msg.Envelope.Subject)
+		tmpSubject := msg.Envelope.Subject
+		common.Sugar.Infof("tmpSubject: %+v", tmpSubject)
+		b, _ := dec.Decode(tmpSubject)
+		log.Println("* " + b)
 	}
 
 	if err := <-done; err != nil {
@@ -189,15 +214,8 @@ func (co *email_account_controller) TestAction(c *gin.Context) {
 
 
 func (co *email_account_controller) SaveAddAction(c *gin.Context) {
-	err, _, _ := admin_utils.AdminPermissionCheck(c)
-	if err != nil {
-
-		common.LogError(err)
-		c.Redirect(301, "/admin/login")
-		return
-	}
 	var BI vo.Email_account_vo
-	err = c.MustBindWith(&BI, binding.Form)
+	err := c.MustBindWith(&BI, binding.Form)
 	if err != nil {
 		common.ShowUMessage(c, &vo2.Umsg{Msg: err.Error(), Url: "/"})
 		common.LogError(err)

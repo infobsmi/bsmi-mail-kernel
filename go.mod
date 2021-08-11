@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/aws/aws-sdk-go v1.40.11
+	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394
 	github.com/cnmade/pongo2gin v1.0.2
 	github.com/disintegration/imaging v1.6.2
 	github.com/emersion/go-imap v1.1.0
